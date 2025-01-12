@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Button, TextInput } from 'react-native-paper';
+import auth from '@react-native-firebase/auth';
 
 const initialState = { email: '', password: '' };
 
@@ -21,6 +22,23 @@ export default function Login() {
       return alert('Password must be at least 6 characters');
     }
     console.log("state =>",state)
+
+    auth()
+  .signInWithEmailAndPassword(email, password)
+  .then(() => {
+    console.log('User account created & signed in!');
+  })
+  .catch(error => {
+    if (error.code === 'auth/email-already-in-use') {
+      console.log('That email address is already in use!');
+    }
+
+    if (error.code === 'auth/invalid-email') {
+      console.log('That email address is invalid!');
+    }
+
+    console.error(error);
+  });
   };
 
   return (
