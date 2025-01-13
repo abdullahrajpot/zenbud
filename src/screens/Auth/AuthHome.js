@@ -4,7 +4,7 @@ import { Button } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/FontAwesome';  // Import FontAwesome from react-native-vector-icons
 import { useNavigation } from '@react-navigation/native';
 
-export default function Home1() {
+export default function AuthHome() {
 
   const navigation= useNavigation();
   return (

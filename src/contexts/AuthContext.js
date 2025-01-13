@@ -13,9 +13,9 @@ const reducer= (state  ,{ type }) => {
   switch (type) {
 
   case 'LOGIN':
-    return Object.assign({}, {isAuthenticated:true})
-  case 'LOGOUT':
-    return Object.assign({}, {isAuthenticated:false})
+    return { ...state, isAuthenticated: true }
+    case 'LOGOUT':
+      return {...state,  isAuthenticated: false }
 
   default:
     return state
@@ -23,12 +23,12 @@ const reducer= (state  ,{ type }) => {
 }
 
 
-export default function AuthContextProvider(props){
+export default function AuthContextProvider({children}){
 
     const [state, dispatch] = useReducer(reducer, initialState)
     return (
       <AuthContext.Provider value={{...state, dispatch}}>
-{props.children}     
+{children}     
  </AuthContext.Provider>
     )
   }

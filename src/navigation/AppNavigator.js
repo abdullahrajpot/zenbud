@@ -7,75 +7,83 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import Chatbot from '../screens/Frontend/AiChat';
 import Login from '../screens/Auth/Login';
 import Register from '../screens/Auth/Register';
-import Home1 from '../screens/Auth/Home1';
-import { useAuthContext } from '../contexts/AuthContext';
+import AuthHome from '../screens/Auth/AuthHome';
+import { useAuthContext } from '../contexts/AuthContext'; // Import the context
+import Tasks from '../screens/Frontend/Tasks';
+import Pomodoro from '../screens/Frontend/Pomodoro';
 
 export default function AppNavigator() {
 
-    const Stack = createNativeStackNavigator();  // Define the stack navigator
-    const Tab = createBottomTabNavigator();  // Define the tab navigator
-
-    const isAuthenticated = useAuthContext();
-    console.log(isAuthenticated) // Example condition for authentication
+    const Stack = createNativeStackNavigator();
+    const Tab = createBottomTabNavigator();
+    const { isAuthenticated } = useAuthContext(); // Get the authentication state
 
     return (
         <NavigationContainer>
-            {/* Stack navigator for handling authentication flow */}
-            <Stack.Navigator>
-                {!isAuthenticated ? (
-                    <Stack.Group>
-                        <Stack.Screen 
-                            name='Home' 
-                            component={Home}
-                            options={{ headerShown: false }}
-                        />
-                    </Stack.Group>
-                ) : (
-                    <Stack.Group>
-                        <Stack.Screen 
-                            name='Home1' 
-                            component={Home1}
-                            options={{ headerShown: false }}
-                        />
-                        <Stack.Screen 
-                            name='Register' 
-                            component={Register}
-                            options={{ headerShown: false }}
-                        />
-                        <Stack.Screen 
-                            name='Login' 
-                            component={Login}
-                            options={{ headerShown: false }}
-                        />
-                    </Stack.Group>
-                )}
-            </Stack.Navigator>
-
-            {/* Uncomment this part for tab navigation if needed */}
-            {/* 
-            <Tab.Navigator>
-                <Tab.Screen 
-                    name='Home' 
-                    component={Home}
-                    options={{
-                        tabBarShowLabel: false,
-                        tabBarIcon: ({ color, size }) => {
-                            return <Icon name="home" size={size} color={color} />
-                        }
-                    }}
-                />
-                <Tab.Screen 
-                    name='Chatbot' 
-                    component={Chatbot}
-                    options={{
-                        tabBarShowLabel: false,
-                        tabBarIcon: ({ color, size }) => {
-                            return <Icon name="robot" size={size} color={color} />
-                        }
-                    }}
-                />
-            </Tab.Navigator>
-            */}
+            {/* If user is not authenticated, show authentication flow */}
+            {!isAuthenticated ? (
+                <Stack.Navigator>
+                    <Stack.Screen 
+                        name='AuthHome' 
+                        component={AuthHome}
+                        options={{ headerShown: false }}
+                    />
+                    <Stack.Screen 
+                        name='Login' 
+                        component={Login}
+                        options={{ headerShown: false }}
+                    />
+                    <Stack.Screen 
+                        name='Register' 
+                        component={Register}
+                        options={{ headerShown: false }}
+                    />
+                </Stack.Navigator>
+            ) : (
+                // Authenticated flow, show Tab.Navigator
+                <Tab.Navigator>
+                    <Tab.Screen 
+                        name='Home' 
+                        component={Home}
+                        options={{
+                            tabBarShowLabel: false,
+                            tabBarIcon: ({ color, size }) => (
+                                <Icon name="home" size={size} color={color} />
+                            ),
+                        }}
+                    />
+                    <Tab.Screen 
+                        name='Chatbot' 
+                        component={Chatbot}
+                        options={{
+                            tabBarShowLabel: false,
+                            tabBarIcon: ({ color, size }) => (
+                                <Icon name="wechat" size={size} color={color} />
+                            ),
+                        }}
+                    />
+                    <Tab.Screen 
+                        name='Tasks' 
+                        component={Tasks}
+                        options={{
+                            tabBarShowLabel: false,
+                            tabBarIcon: ({ color, size }) => (
+                                <Icon name="tasks" size={size} color={color} />
+                            ),
+                        }}
+                    />
+                    <Tab.Screen 
+                        name='Pomodoro' 
+                        component={Pomodoro}
+                        options={{
+                            tabBarShowLabel: false,
+                            tabBarIcon: ({ color, size }) => (
+                                <Icon name="clock-o" size={size} color={color} />
+                            ),
+                        }}
+                    />
+                </Tab.Navigator>
+            )}
         </NavigationContainer>
     );
 }
