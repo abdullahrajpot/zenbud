@@ -14,7 +14,11 @@ export default function Pomodoro() {
           headerShown:false
         }}
         name="PomodoroTimer" component={PomodoroTimer} />
-        <Stack.Screen name="TimerSetting" component={TimerSetting} />
+        <Stack.Screen 
+        options={{
+          headerShown:false
+        }}
+        name="TimerSetting" component={TimerSetting} />
       </Stack.Navigator>
     
   );

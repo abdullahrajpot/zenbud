@@ -208,7 +208,6 @@ import { Button, IconButton, TextInput } from 'react-native-paper';
 import auth from '@react-native-firebase/auth';
 import { useNavigation } from '@react-navigation/native';
 import { useAuthContext } from '../../contexts/AuthContext';
-// import { useAuthContext } from '../contexts/AuthContext'; // Import the context
 
 const initialState = { email: '', password: '' };
 
@@ -216,18 +215,17 @@ export default function Login() {
   const [state, setState] = useState(initialState);
   const [focusedField, setFocusedField] = useState('');
   const navigation = useNavigation();
-  const { dispatch,isAuthenticated } = useAuthContext(); // Access dispatch function from context
-
+  const { dispatch, isAuthenticated } = useAuthContext(); // Access dispatch function from context
 
   useEffect(() => {
-    if (isAuthenticated) {
-      console.log('User  is authenticated, navigating to Home');
-      navigation.navigate('Home'); // Navigate to Home page
+    if (state.isAuthenticated) {
+      navigation.navigate('Home');
     }
-  }, [isAuthenticated, navigation]);
+  }, [state.isAuthenticated, navigation]);
+  
 
   const handleChange = (name, value) => {
-    setState(s => ({ ...s, [name]: value }));
+    setState((s) => ({ ...s, [name]: value }));
   };
 
   const handleLogin = () => {
@@ -242,19 +240,25 @@ export default function Login() {
 
     auth()
       .signInWithEmailAndPassword(email, password)
-      .then(() => {
+      .then((userCredential) => {
+        const user = userCredential.user; // Get authenticated user
         console.log('User account signed in!');
-        dispatch({ type: 'LOGIN' }); // Dispatch LOGIN action on successful login
-        // navigation.navigate('Home'); // Navigate to Home page
-      console.log(isAuthenticated)
+
+        // Dispatch login action with the authenticated user
+        dispatch({ type: 'SET_LOGGED_IN', payload: { user: user } });
+
+        // Optional: Navigate to Home after login if needed
+        console.log(isAuthenticated);
       })
-      .catch(error => {
+      .catch((error) => {
         if (error.code === 'auth/email-already-in-use') {
           console.log('That email address is already in use!');
+          alert('Error', 'That email address is already in use!');
         }
 
         if (error.code === 'auth/invalid-email') {
           console.log('That email address is invalid!');
+          alert('Error', 'That email address is invalid!');
         }
 
         console.error(error);
@@ -267,8 +271,8 @@ export default function Login() {
         <IconButton
           icon="arrow-left"
           size={30}
-          color='#fff'
-          onPress={() => navigation.goBack()}  
+          color="#fff"
+          onPress={() => navigation.goBack()}
           style={styles.backButton}
         />
         <Text style={styles.headerText}>Welcome Back!</Text>
@@ -281,8 +285,11 @@ export default function Login() {
             mode="flat"
             label="Email"
             placeholderTextColor={focusedField === 'email' ? smokeColor : 'white'}
-            style={[styles.inputField, { borderBottomColor: focusedField === 'email' ? smokeColor : 'white' }]}
-            onChangeText={val => handleChange('email', val)}
+            style={[
+              styles.inputField,
+              { borderBottomColor: focusedField === 'email' ? smokeColor : 'white' },
+            ]}
+            onChangeText={(val) => handleChange('email', val)}
             keyboardType="email-address"
             theme={{
               colors: {
@@ -301,9 +308,12 @@ export default function Login() {
             mode="flat"
             label="Password"
             secureTextEntry
-            style={[styles.inputField, { borderBottomColor: focusedField === 'password' ? smokeColor : 'white' }]}
+            style={[
+              styles.inputField,
+              { borderBottomColor: focusedField === 'password' ? smokeColor : 'white' },
+            ]}
             right={<TextInput.Icon icon="eye" />}
-            onChangeText={val => handleChange('password', val)}
+            onChangeText={(val) => handleChange('password', val)}
             keyboardType="default"
             theme={{
               colors: {
@@ -318,18 +328,12 @@ export default function Login() {
             onBlur={() => setFocusedField('')}
           />
 
-          <Button
-            mode="contained"
-            onPress={handleLogin}
-            style={styles.button}
-          >
+          <Button mode="contained" onPress={handleLogin} style={styles.button}>
             Sign In
           </Button>
 
           <View style={styles.bottom}>
-            <Text style={[styles.bottomText, styles.signUpText]}>
-              Forgot Password
-            </Text>
+            <Text style={[styles.bottomText, styles.signUpText]}>Forgot Password</Text>
           </View>
         </View>
       </View>

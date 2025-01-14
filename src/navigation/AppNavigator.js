@@ -67,6 +67,7 @@ export default function AppNavigator() {
                         component={Tasks}
                         options={{
                             tabBarShowLabel: false,
+                            headerShown:false,
                             tabBarIcon: ({ color, size }) => (
                                 <Icon name="tasks" size={size} color={color} />
                             ),
@@ -77,6 +78,7 @@ export default function AppNavigator() {
                         component={Pomodoro}
                         options={{
                             tabBarShowLabel: false,
+                            headerShown:false,
                             tabBarIcon: ({ color, size }) => (
                                 <Icon name="clock-o" size={size} color={color} />
                             ),

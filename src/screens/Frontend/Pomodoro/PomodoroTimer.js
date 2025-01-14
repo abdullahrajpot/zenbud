@@ -86,12 +86,13 @@ import {
   StyleSheet,
   TouchableOpacity,
   Animated,
-  Vibration,
   Easing,
+  Vibration,
 } from 'react-native';
+import Icon from 'react-native-vector-icons/Ionicons';
 import Sound from 'react-native-sound';
 
-const PomodoroTimer = () => {
+const PomodoroTimer = ({ navigation }) => {
   const [workTime, setWorkTime] = useState(25); // Work time in minutes
   const [breakTime, setBreakTime] = useState(5); // Break time in minutes
   const [remainingTime, setRemainingTime] = useState(workTime * 60); // Time in seconds
@@ -135,7 +136,7 @@ const PomodoroTimer = () => {
     Vibration.vibrate(500);
 
     // Play a sound
-    const sound = new Sound('beep.mp3', Sound.MAIN_BUNDLE, (error) => {
+    const sound = new Sound('alarm.mp3', Sound.MAIN_BUNDLE, (error) => {
       if (!error) {
         sound.play();
       }
@@ -166,9 +167,10 @@ const PomodoroTimer = () => {
 
   const minutes = Math.floor(remainingTime / 60);
   const seconds = remainingTime % 60;
-  const progress = progressAnimation.interpolate({
+
+  const progressPercentage = progressAnimation.interpolate({
     inputRange: [0, 1],
-    outputRange: ['0deg', '360deg'],
+    outputRange: ['0%', '100%'],
   });
 
   return (
@@ -180,7 +182,7 @@ const PomodoroTimer = () => {
           <Animated.View
             style={[
               styles.progressCircle,
-              { transform: [{ rotate: progress }] },
+              { width: progressPercentage, height: progressPercentage },
             ]}
           />
           <View style={styles.innerCircle}>
@@ -189,7 +191,9 @@ const PomodoroTimer = () => {
             </Text>
           </View>
         </View>
-        <Text style={styles.taskLabel}>{intervalType === 'Work' ? 'Work Time' : 'Break Time'}</Text>
+        <Text style={styles.taskLabel}>
+          {intervalType === 'Work' ? 'Work Time' : 'Break Time'}
+        </Text>
       </View>
 
       <View style={styles.buttonContainer}>
@@ -201,6 +205,24 @@ const PomodoroTimer = () => {
           <Text style={styles.buttonText}>Reset</Text>
         </TouchableOpacity>
       </View>
+
+      {/* Icon for navigation to Add Timer page */}
+      <TouchableOpacity
+        style={styles.addTimerButton}
+        onPress={() => {
+          navigation.navigate('TimerSetting', {
+            workTime,
+            breakTime,
+            updateTimes: (newWorkTime, newBreakTime) => {
+              setWorkTime(newWorkTime);
+              setBreakTime(newBreakTime);
+              setRemainingTime(newWorkTime * 60); // Reset to new work time
+            },
+          });
+        }}
+      >
+        <Icon name="add-circle" size={60} color="#dd5201" />
+      </TouchableOpacity>
     </View>
   );
 };
@@ -217,7 +239,7 @@ const styles = StyleSheet.create({
   header: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#ffffff',
+    color: '#dd5201',
     marginBottom: 20,
   },
   timerContainer: {
@@ -231,15 +253,15 @@ const styles = StyleSheet.create({
     backgroundColor: '#2c2c2e',
     justifyContent: 'center',
     alignItems: 'center',
+    overflow: 'hidden',
   },
   progressCircle: {
     position: 'absolute',
-    width: 250,
-    height: 250,
+    width: '0%',
+    height: '0%',
     borderRadius: 125,
-    borderWidth: 10,
-    borderColor: '#ff9500',
-    borderLeftColor: 'transparent',
+    backgroundColor: '#dd5201',
+    opacity: 0.2,
   },
   innerCircle: {
     width: 200,
@@ -248,6 +270,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#1c1c1e',
     justifyContent: 'center',
     alignItems: 'center',
+    position: 'absolute',
   },
   timerText: {
     fontSize: 48,
@@ -256,7 +279,7 @@ const styles = StyleSheet.create({
   },
   taskLabel: {
     fontSize: 18,
-    color: '#ffffff',
+    color: '#dd5201',
     marginTop: 10,
   },
   buttonContainer: {
@@ -264,7 +287,7 @@ const styles = StyleSheet.create({
     marginTop: 30,
   },
   button: {
-    backgroundColor: '#ff9500',
+    backgroundColor: '#dd5201',
     padding: 15,
     borderRadius: 10,
     marginHorizontal: 10,
@@ -273,5 +296,10 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: '#ffffff',
     fontWeight: 'bold',
+  },
+  addTimerButton: {
+    position: 'absolute',
+    bottom: 0,
+    right: 10,
   },
 });

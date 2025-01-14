@@ -57,6 +57,7 @@ export default function Register() {
     userRef.set({
       name,
       email: user.email,
+      uid: user.uid,
       phoneNumber: number,
       dateCreated: new Date(),
     })
@@ -250,3 +251,5 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1, // Only bottom border
   },
 });
+
+
