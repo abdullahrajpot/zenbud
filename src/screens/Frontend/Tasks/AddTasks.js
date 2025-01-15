@@ -1,167 +1,163 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, ScrollView, Alert } from 'react-native';
-import { Button, TextInput, Text, IconButton } from 'react-native-paper';
-import auth, { firebase } from '@react-native-firebase/auth';
-import firestore from '@react-native-firebase/firestore';
-import { useNavigation } from '@react-navigation/native';
+import { View, StyleSheet, ScrollView, Platform } from 'react-native';
+import { Button, TextInput, Text } from 'react-native-paper';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { useAuthContext } from '../../../contexts/AuthContext';
+import firestore from '@react-native-firebase/firestore';
+import { firebase } from '@react-native-firebase/auth';
 
-const initialState = { title: '', description: '', category:'',date:'', time:'' };
+const initialState = { title: '', description: '', category: '', date: '', time: '' };
 
 export default function AddTasks() {
   const [state, setState] = useState(initialState);
-  const [focusedField, setFocusedField] = useState('');
-  const navigation = useNavigation();
-  const {user}=useAuthContext();
+  const [datePickerVisible, setDatePickerVisible] = useState(false);
+  const [timePickerVisible, setTimePickerVisible] = useState(false);
+  const { user } = useAuthContext();
 
   const handleChange = (name, value) => {
-    setState(s => ({ ...s, [name]: value }));
-  }
+    setState((s) => ({ ...s, [name]: value }));
+  };
 
-    const handleAdd = () => {
-let {title, description, category, date, time}= state;
-title= title.trim();
-description= description.trim();
- let taskData = {title, description, category, date, time}
+  const handleAdd = () => {
+    let { title, description, category, date, time } = state;
+    title = title.trim();
+    description = description.trim();
 
- taskData.id = Math.random().toString(36).slice(2);
- taskData.dateCreated= firebase.firestore.FieldValue.serverTimestamp();
- taskData.status='Incomplete';
-taskData.createdBy={
-  emial:user.email,
-  uid: user.uid
-}
-createDocument(taskData);
+    let taskData = { title, description, category, date, time };
+    taskData.id = Math.random().toString(36).slice(2);
+    taskData.dateCreated = firebase.firestore.FieldValue.serverTimestamp();
+    taskData.status = 'Pending';
+    taskData.createdBy = {
+      email: user.email,
+      uid: user.uid,
     };
 
-    const createDocument=(taskData)=>{
-      firestore()
-  .collection('Tasks')
-  .doc(taskData.id)
-  .set(taskData)
-  .then(() => {
-    console.log('Task has been added successfully');
-  }).catch(err=>{
-console.log(err)
-  });
+    createDocument(taskData);
+  };
+
+  const createDocument = (taskData) => {
+    firestore()
+      .collection('Tasks')
+      .doc(taskData.id)
+      .set(taskData)
+      .then(() => {
+        console.log('Task has been added successfully');
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  const handleDateChange = (event, selectedDate) => {
+    setDatePickerVisible(false);
+    if (selectedDate) {
+      const formattedDate = selectedDate.toISOString().split('T')[0]; // Format: YYYY-MM-DD
+      handleChange('date', formattedDate);
     }
+  };
+
+  const handleTimeChange = (event, selectedTime) => {
+    setTimePickerVisible(false);
+    if (selectedTime) {
+      const formattedTime = selectedTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); // Format: HH:MM AM/PM
+      handleChange('time', formattedTime);
+    }
+  };
 
   return (
     <ScrollView style={styles.container}>
-
-
       <View style={styles.flexContainer}>
         <View style={{ width: '100%' }}>
-          <View style={styles.TopView}>
-            <Text style={styles.mainText} >Add Task</Text>
+          {/* Top View */}
+          <View style={styles.topView}>
+            <Text style={styles.mainText}>Add Task</Text>
           </View>
+
+          {/* Input Fields */}
           <TextInput
             mode="flat"
             label="Title"
-            // placeholder="Enter Title"
-            placeholderTextColor={focusedField === 'title' ? smokeColor : 'white'}
-            style={[styles.inputField, { borderBottomColor: focusedField === 'title' ? smokeColor : 'white' }]}
-            onChangeText={val => handleChange('title', val)}
-            keyboardType="text"
+            style={styles.inputField}
+            onChangeText={(val) => handleChange('title', val)}
             theme={{
               colors: {
-                primary: smokeColor,
-                placeholder: focusedField === 'title' ? smokeColor : 'white',
-                text: 'white',
+                text: smokeColor,
+                placeholder: smokeColor,
                 background: 'transparent',
                 underlineColor: 'transparent',
+                primary: smokeColor,
               },
             }}
-            onFocus={() => setFocusedField('title')}
-            onBlur={() => setFocusedField('')}
           />
           <TextInput
             mode="flat"
-            label="description"
-            placeholderTextColor={focusedField === 'description' ? smokeColor : 'white'}
-            style={[styles.inputField, { borderBottomColor: focusedField === 'description' ? smokeColor : 'white' }]}
-            onChangeText={val => handleChange('description', val)}
+            label="Description"
+            style={styles.inputField}
+            onChangeText={(val) => handleChange('description', val)}
             theme={{
               colors: {
-                primary: smokeColor,
-                placeholder: focusedField === 'description' ? smokeColor : 'white',
-                text: 'white',
+                text: smokeColor,
+                placeholder: smokeColor,
                 background: 'transparent',
                 underlineColor: 'transparent',
-              },
-            }}
-            onFocus={() => setFocusedField('description')}
-            onBlur={() => setFocusedField('')}
-          />
-          <TextInput
-            mode="flat"
-            label="Date"
-            // placeholder="Enter Date"
-            placeholderTextColor={focusedField === 'Date' ? smokeColor : 'white'}
-            style={[styles.inputField, { borderBottomColor: focusedField === 'Date' ? smokeColor : 'white' }]}
-            onChangeText={val => handleChange('date', val)}
-            keyboardType="Date"
-            theme={{
-              colors: {
                 primary: smokeColor,
-                placeholder: focusedField === 'Date' ? smokeColor : 'white',
-                text: 'white',
-                background: 'transparent',
-                underlineColor: 'transparent',
               },
             }}
-            onFocus={() => setFocusedField('Date')}
-            onBlur={() => setFocusedField('')}
-          />
-          <TextInput
-            mode="flat"
-            label="Time"
-            // placeholder="Enter Time"
-            placeholderTextColor={focusedField === 'Time' ? smokeColor : 'white'}
-            style={[styles.inputField, { borderBottomColor: focusedField === 'Time' ? smokeColor : 'white' }]}
-            onChangeText={val => handleChange('time', val)}
-            keyboardType='default'
-
-            theme={{
-              colors: {
-                primary: smokeColor,
-                placeholder: focusedField === 'Time' ? smokeColor : 'white',
-                text: 'white',
-                background: 'transparent',
-                underlineColor: 'transparent',
-              },
-            }}
-            onFocus={() => setFocusedField('Time')}
-            onBlur={() => setFocusedField('')}
           />
           <TextInput
             mode="flat"
             label="Category"
-            // placeholder="Enter Category"
-            placeholderTextColor={focusedField === 'Category' ? smokeColor : 'white'}
-            style={[styles.inputField, { borderBottomColor: focusedField === 'Category' ? smokeColor : 'white' }]}
-            onChangeText={val => handleChange('category', val)}
-            keyboardType="Category"
+            style={styles.inputField}
+            onChangeText={(val) => handleChange('category', val)}
             theme={{
               colors: {
-                primary: smokeColor,
-                placeholder: focusedField === 'Category' ? smokeColor : 'white',
-                text: 'white',
+                text: smokeColor,
+                placeholder: smokeColor,
                 background: 'transparent',
                 underlineColor: 'transparent',
+                primary: smokeColor,
               },
             }}
-            onFocus={() => setFocusedField('Category')}
-            onBlur={() => setFocusedField('')}
           />
 
-
-
+          {/* Date Picker */}
           <Button
-            mode="contained"
-            onPress={handleAdd}
+            mode="outlined"
+            onPress={() => setDatePickerVisible(true)}
             style={styles.button}
+            textColor={smokeColor}
           >
+            {state.date ? `Date: ${state.date}` : 'Select Date'}
+          </Button>
+          {datePickerVisible && (
+            <DateTimePicker
+              value={new Date()}
+              mode="date"
+              display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+              onChange={handleDateChange}
+            />
+          )}
+
+          {/* Time Picker */}
+          <Button
+            mode="outlined"
+            onPress={() => setTimePickerVisible(true)}
+            style={styles.button}
+            textColor={smokeColor}
+          >
+            {state.time ? `Time: ${state.time}` : 'Select Time'}
+          </Button>
+          {timePickerVisible && (
+            <DateTimePicker
+              value={new Date()}
+              mode="time"
+              display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+              onChange={handleTimeChange}
+            />
+          )}
+
+          {/* Add Task Button */}
+          <Button mode="contained" onPress={handleAdd} style={styles.addButton}>
             Add Task
           </Button>
         </View>
@@ -179,36 +175,38 @@ const styles = StyleSheet.create({
     backgroundColor: primaryColor,
     justifyContent: 'center',
     alignItems: 'center',
-    color: 'white',
     padding: 18,
   },
   container: {
     flex: 1,
     backgroundColor: primaryColor,
   },
-  TopView: {
-    marginVertical: 30
+  topView: {
+    marginVertical: 30,
+    alignItems: 'center',
   },
   mainText: {
     color: smokeColor,
-    fontSize: 28,
-    fontWeight: 'larger'
-
+    fontSize: 30,
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
-
-
-
-
   button: {
+    borderColor: smokeColor,
+    borderWidth: 1,
+    marginVertical: 10,
+  },
+  addButton: {
     backgroundColor: smokeColor,
     marginTop: 20,
-    paddingVertical: 8,
-    paddingHorizontal: 20,
-    borderRadius: 10,
+    paddingVertical: 10,
+    borderRadius: 8,
   },
   inputField: {
     backgroundColor: 'transparent',
     marginBottom: 30,
-    borderBottomWidth: 1, // Only bottom border
+    borderBottomWidth: 1,
+    // borderBottomColor: 'white',
+    color: smokeColor,
   },
 });

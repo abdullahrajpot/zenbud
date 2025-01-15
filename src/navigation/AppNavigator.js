@@ -13,7 +13,6 @@ import Tasks from '../screens/Frontend/Tasks';
 import Pomodoro from '../screens/Frontend/Pomodoro';
 
 export default function AppNavigator() {
-
     const Stack = createNativeStackNavigator();
     const Tab = createBottomTabNavigator();
     const { isAuthenticated } = useAuthContext(); // Get the authentication state
@@ -23,65 +22,81 @@ export default function AppNavigator() {
             {/* If user is not authenticated, show authentication flow */}
             {!isAuthenticated ? (
                 <Stack.Navigator>
-                    <Stack.Screen 
-                        name='AuthHome' 
+                    <Stack.Screen
+                        name="AuthHome"
                         component={AuthHome}
                         options={{ headerShown: false }}
                     />
-                    <Stack.Screen 
-                        name='Login' 
+                    <Stack.Screen
+                        name="Login"
                         component={Login}
                         options={{ headerShown: false }}
                     />
-                    <Stack.Screen 
-                        name='Register' 
+                    <Stack.Screen
+                        name="Register"
                         component={Register}
                         options={{ headerShown: false }}
                     />
                 </Stack.Navigator>
             ) : (
                 // Authenticated flow, show Tab.Navigator
-                <Tab.Navigator>
-                    <Tab.Screen 
-                        name='Home' 
+                <Tab.Navigator
+                    screenOptions={({ route }) => ({
+                        tabBarShowLabel: false,
+                        tabBarStyle: {
+                            backgroundColor: '#000000', // Tab bar background color
+                            borderTopWidth: 0, // Removes the border
+                        },
+                        tabBarActiveTintColor: '#dd5201', // Active icon color
+                        tabBarInactiveTintColor: '#888', // Inactive icon color
+                        tabBarIcon: ({ color, size }) => {
+                            let iconName;
+                            switch (route.name) {
+                                case 'Home':
+                                    iconName = 'home';
+                                    break;
+                                case 'Chatbot':
+                                    iconName = 'wechat';
+                                    break;
+                                case 'Tasks':
+                                    iconName = 'tasks';
+                                    break;
+                                case 'Pomodoro':
+                                    iconName = 'clock-o';
+                                    break;
+                                default:
+                                    iconName = 'circle';
+                            }
+                            return <Icon name={iconName} size={size} color={color} />;
+                        },
+                    })}
+                >
+                    <Tab.Screen
+                        name="Home"
                         component={Home}
                         options={{
-                            tabBarShowLabel: false,
-                            tabBarIcon: ({ color, size }) => (
-                                <Icon name="home" size={size} color={color} />
-                            ),
+                            headerShown: false,
                         }}
                     />
-                    <Tab.Screen 
-                        name='Chatbot' 
+                    <Tab.Screen
+                        name="Chatbot"
                         component={Chatbot}
                         options={{
-                            tabBarShowLabel: false,
-                            tabBarIcon: ({ color, size }) => (
-                                <Icon name="wechat" size={size} color={color} />
-                            ),
+                            headerShown: false,
                         }}
                     />
-                    <Tab.Screen 
-                        name='Tasks' 
+                    <Tab.Screen
+                        name="Tasks"
                         component={Tasks}
                         options={{
-                            tabBarShowLabel: false,
-                            headerShown:false,
-                            tabBarIcon: ({ color, size }) => (
-                                <Icon name="tasks" size={size} color={color} />
-                            ),
+                            headerShown: false,
                         }}
                     />
-                    <Tab.Screen 
-                        name='Pomodoro' 
+                    <Tab.Screen
+                        name="Pomodoro"
                         component={Pomodoro}
                         options={{
-                            tabBarShowLabel: false,
-                            headerShown:false,
-                            tabBarIcon: ({ color, size }) => (
-                                <Icon name="clock-o" size={size} color={color} />
-                            ),
+                            headerShown: false,
                         }}
                     />
                 </Tab.Navigator>

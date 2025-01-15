@@ -232,7 +232,7 @@ export default PomodoroTimer;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1c1c1e',
+    backgroundColor: '#000000',
     justifyContent: 'center',
     alignItems: 'center',
   },
