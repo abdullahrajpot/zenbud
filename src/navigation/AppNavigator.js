@@ -4,13 +4,14 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Home from '../screens/Frontend/Home';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import Chatbot from '../screens/Frontend/AiChat';
 import Login from '../screens/Auth/Login';
 import Register from '../screens/Auth/Register';
 import AuthHome from '../screens/Auth/AuthHome';
 import { useAuthContext } from '../contexts/AuthContext'; // Import the context
 import Tasks from '../screens/Frontend/Tasks';
 import Pomodoro from '../screens/Frontend/Pomodoro';
+import AiChat from '../screens/Frontend/AiChat';
+import Spotify from '../screens/Frontend/Spotify';
 
 export default function AppNavigator() {
     const Stack = createNativeStackNavigator();
@@ -55,7 +56,7 @@ export default function AppNavigator() {
                                 case 'Home':
                                     iconName = 'home';
                                     break;
-                                case 'Chatbot':
+                                case 'AiChat':
                                     iconName = 'wechat';
                                     break;
                                 case 'Tasks':
@@ -63,6 +64,9 @@ export default function AppNavigator() {
                                     break;
                                 case 'Pomodoro':
                                     iconName = 'clock-o';
+                                    break;
+                                case 'Spotify':
+                                    iconName = 'spotify';
                                     break;
                                 default:
                                     iconName = 'circle';
@@ -79,8 +83,8 @@ export default function AppNavigator() {
                         }}
                     />
                     <Tab.Screen
-                        name="Chatbot"
-                        component={Chatbot}
+                        name="AiChat"
+                        component={AiChat}
                         options={{
                             headerShown: false,
                         }}
@@ -95,6 +99,13 @@ export default function AppNavigator() {
                     <Tab.Screen
                         name="Pomodoro"
                         component={Pomodoro}
+                        options={{
+                            headerShown: false,
+                        }}
+                    />
+                    <Tab.Screen
+                        name="Spotify"
+                        component={Spotify}
                         options={{
                             headerShown: false,
                         }}

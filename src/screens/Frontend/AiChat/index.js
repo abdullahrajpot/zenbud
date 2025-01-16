@@ -1,12 +1,26 @@
-import React from 'react'
-import { Text, View } from 'react-native'
+import React from 'react';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-export default function Chatbot(){
+import Chatbot from './Chatbot';
+import ChatBubble from './ChatBubble';
 
-    return (
-      <View>
-        <Text>Ai</Text>
-      </View>
-    )
-  }
+const Stack = createNativeStackNavigator();
 
+export default function AiChat() {
+  return (
+    
+      <Stack.Navigator initialRouteName="Chatbot">
+        <Stack.Screen
+        options={{
+          headerShown:false
+        }}
+        name="Chatbot" component={Chatbot} />
+        <Stack.Screen 
+        options={{
+          headerShown:false
+        }}
+        name="ChatBubble" component={ChatBubble} />
+      </Stack.Navigator>
+    
+  );
+}
